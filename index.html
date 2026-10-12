@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chat - Enter PIN</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="pin-page">
+  <div class="pin-container">
+    <div class="pin-box">
+      <h1>🔒 Secure Chat</h1>
+      <p>Enter the access PIN to continue</p>
+      <input type="password" id="pinInput" maxlength="10" placeholder="Enter PIN" autofocus>
+      <button id="pinBtn">Unlock</button>
+      <p id="pinError" class="error"></p>
+    </div>
+  </div>
+  <script>
+    const pinInput = document.getElementById('pinInput');
+    const pinBtn = document.getElementById('pinBtn');
+    const pinError = document.getElementById('pinError');
+
+    function checkPin() {
+      const pin = pinInput.value.trim();
+      if (!pin) {
+        pinError.textContent = 'Please enter a PIN';
+        return;
+      }
+      fetch('/api/pin', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ pin })
+      })
+      .then(r => r.json())
+      .then(data => {
+        if (data.success) {
+          sessionStorage.setItem('pinOk', '1');
+          window.location.href = '/auth.html';
+        } else {
+          pinError.textContent = 'Wrong PIN. Access denied.';
+          pinInput.value = '';
+          pinInput.focus();
+        }
+      })
+      .catch(() => {
+        pinError.textContent = 'Server error. Try again.';
+      });
+    }
+
+    pinBtn.addEventListener('click', checkPin);
+    pinInput.addEventListener('keydown', e => {
+      if (e.key === 'Enter') checkPin();
+    });
+
+    // If already unlocked in this session, skip
+    if (sessionStorage.getItem('pinOk') === '1') {
+      window.location.href = '/auth.html';
+    }
+  </script>
+</body>
+</html>

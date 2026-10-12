@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Chat</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="chat-page">
+  <div class="chat-header">
+    <div class="header-info">
+      <div class="avatar">💬</div>
+      <div>
+        <div class="header-title">Group Chat</div>
+        <div class="header-sub" id="onlineStatus">online</div>
+      </div>
+    </div>
+    <button id="logoutBtn" title="Logout">⎋</button>
+  </div>
+
+  <div class="chat-messages" id="messages"></div>
+
+  <div class="chat-input-bar">
+    <input type="text" id="msgInput" placeholder="Type a message" maxlength="1000" autocomplete="off">
+    <button id="sendBtn">➤</button>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

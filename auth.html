@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chat - Login / Register</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="auth-page">
+  <div class="auth-container">
+    <div class="auth-box">
+      <h1>💬 Group Chat</h1>
+      <div class="tabs">
+        <button class="tab active" data-tab="login">Login</button>
+        <button class="tab" data-tab="register">Register</button>
+      </div>
+
+      <form id="loginForm" class="auth-form">
+        <input type="text" id="loginName" placeholder="Your name" required maxlength="20" autocomplete="username">
+        <input type="password" id="loginPass" placeholder="Password" required autocomplete="current-password">
+        <button type="submit">Login</button>
+        <p id="loginError" class="error"></p>
+      </form>
+
+      <form id="registerForm" class="auth-form hidden">
+        <input type="text" id="regName" placeholder="Choose a name" required maxlength="20" autocomplete="username">
+        <input type="password" id="regPass" placeholder="Choose a password" required autocomplete="new-password">
+        <button type="submit">Register & Enter Chat</button>
+        <p id="regError" class="error"></p>
+      </form>
+    </div>
+  </div>
+  <script>
+    // PIN guard
+    if (sessionStorage.getItem('pinOk') !== '1') {
+      window.location.href = '/';
+    }
+
+    // Tabs
+    document.querySelectorAll('.tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        const target = tab.dataset.tab;
+        document.getElementById('loginForm').classList.toggle('hidden', target !== 'login');
+        document.getElementById('registerForm').classList.toggle('hidden', target !== 'register');
+        document.getElementById('loginError').textContent = '';
+        document.getElementById('regError').textContent = '';
+      });
+    });
+
+    // Login
+    document.getElementById('loginForm').addEventListener('submit', async e => {
+      e.preventDefault();
+      const name = document.getElementById('loginName').value.trim();
+      const password = document.getElementById('loginPass').value;
+      const errEl = document.getElementById('loginError');
+      errEl.textContent = '';
+      try {
+        const res = await fetch('/api/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, password })
+        });
+        const data = await res.json();
+        if (data.success) {
+          window.location.href = '/chat.html';
+        } else {
+          errEl.textContent = data.message || 'Login failed';
+        }
+      } catch {
+        errEl.textContent = 'Server error';
+      }
+    });
+
+    // Register
+    document.getElementById('registerForm').addEventListener('submit', async e => {
+      e.preventDefault();
+      const name = document.getElementById('regName').value.trim();
+      const password = document.getElementById('regPass').value;
+      const errEl = document.getElementById('regError');
+      errEl.textContent = '';
+      try {
+        const res = await fetch('/api/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, password })
+        });
+        const data = await res.json();
+        if (data.success) {
+          window.location.href = '/chat.html';
+        } else {
+          errEl.textContent = data.message || 'Registration failed';
+        }
+      } catch {
+        errEl.textContent = 'Server error';
+      }
+    });
+  </script>
+</body>
+</html>
